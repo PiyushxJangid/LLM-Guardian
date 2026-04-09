@@ -251,12 +251,3 @@ The React dashboard provides:
 
 ---
 
-## 📄 License
-
-This project is for academic / educational purposes. See [LICENSE](LICENSE) for details.
-
----
-
-## 👨‍💻 Author
-
-Built as part of a PBL (Project-Based Learning) initiative exploring AI security and prompt injection defense mechanisms.
