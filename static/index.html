@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Guardian — Fintech Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #d4e5d0;
+    --card-dark: #1a1a1a;
+    --card-light: #f5f5f0;
+    --card-white: #ffffff;
+    --mint: #7edd8a;
+    --mint-light: #b6f0be;
+    --mint-dark: #4dc45c;
+    --purple: #b8a6f0;
+    --purple-light: #d4c8f8;
+    --purple-dark: #8b75e0;
+    --text-dark: #1a1a1a;
+    --text-light: #ffffff;
+    --text-muted: #888;
+    --red: #ff6b6b;
+    --orange: #ffb347;
+    --yellow: #ffd93d;
+    --radius-xl: 28px;
+    --radius-lg: 20px;
+    --radius-md: 14px;
+    --radius-sm: 10px;
+    --radius-pill: 999px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 24px;
+    color: var(--text-dark);
+  }
+
+  /* ── HEADER ─────────────────────────────────────── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: var(--card-dark);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .logo-text h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-dark);
+    line-height: 1;
+  }
+
+  .logo-text p {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .header-badges {
+    display: flex;
+    gap: 8px;
+  }
+
+  .badge {
+    background: var(--card-dark);
+    color: var(--mint);
+    border-radius: var(--radius-pill);
+    padding: 6px 14px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .badge.active {
+    background: var(--mint);
+    color: var(--card-dark);
+  }
+
+  /* ── LAYOUT ──────────────────────────────────────── */
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .col-left { display: flex; flex-direction: column; gap: 16px; }
+  .col-right { display: flex; flex-direction: column; gap: 16px; }
+
+  /* ── CARDS ───────────────────────────────────────── */
+  .card {
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .card-dark { background: var(--card-dark); color: var(--text-light); }
+  .card-light { background: var(--card-light); color: var(--text-dark); }
+  .card-white { background: var(--card-white); color: var(--text-dark); }
+  .card-mint { background: var(--mint); color: var(--card-dark); }
+  .card-purple { background: var(--purple); color: var(--card-dark); }
+
+  /* ── PROMPT INPUT CARD ───────────────────────────── */
+  .prompt-card {
+    background: var(--card-dark);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+  }
+
+  .prompt-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .prompt-card-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .dropdown-pill {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    font-size: 12px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .prompt-textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.07);
+    border: 1.5px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-lg);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    padding: 14px 16px;
+    resize: none;
+    height: 120px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .prompt-textarea:focus { border-color: var(--mint); }
+  .prompt-textarea::placeholder { color: rgba(255,255,255,0.3); }
+
+  .prompt-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    align-items: center;
+  }
+
+  .btn-primary {
+    background: var(--mint);
+    color: var(--card-dark);
+    border: none;
+    border-radius: var(--radius-pill);
+    padding: 10px 22px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s, transform 0.1s;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .btn-primary:hover { background: var(--mint-dark); transform: scale(1.02); }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.08);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: var(--radius-pill);
+    padding: 10px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .powered-by {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 10px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── RISK SCORE GAUGE CARD ───────────────────────── */
+  .balance-card {
+    background: var(--mint);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .balance-card h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--card-dark);
+    margin-bottom: 4px;
+  }
+
+  .balance-nav {
+    position: absolute;
+    top: 24px; right: 24px;
+    display: flex; gap: 8px;
+  }
+
+  .nav-btn {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.5);
+    border: none;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .gauge-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0 8px;
+    position: relative;
+  }
+
+  .gauge-svg { width: 200px; height: 110px; }
+
+  .gauge-label {
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+  }
+
+  .gauge-score {
+    font-family: 'Syne', sans-serif;
+    font-size: 34px;
+    font-weight: 800;
+    color: var(--card-dark);
+    line-height: 1;
+  }
+
+  .gauge-sub {
+    font-size: 12px;
+    color: rgba(0,0,0,0.5);
+    margin-top: 2px;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  .trend-up {
+    background: var(--card-dark);
+    color: var(--mint);
+    border-radius: var(--radius-pill);
+    width: 20px; height: 20px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+
+  /* ── RESULT CARD ─────────────────────────────────── */
+  .result-card {
+    background: var(--card-white);
+    border-radius: var(--radius-xl);
+    padding: 0;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .result-header {
+    padding: 18px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .result-header-left {
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .result-icon {
+    width: 40px; height: 40px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .result-status-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .result-status-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .result-meta {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    padding: 0 24px 20px;
+    gap: 16px;
+  }
+
+  .meta-item label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .meta-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .meta-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .risk-bar {
+    height: 6px;
+    border-radius: var(--radius-pill);
+    background: linear-gradient(90deg, #4dc45c, #ffd93d, #ff6b6b);
+    margin-top: 8px;
+    position: relative;
+  }
+
+  .risk-bar-dot {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px; height: 12px;
+    background: var(--card-dark);
+    border: 2px solid #fff;
+    border-radius: 50%;
+  }
+
+  /* ── MATCHED RULES CARD ──────────────────────────── */
+  .rules-card {
+    background: var(--card-white);
+    border-radius: var(--radius-xl);
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .rules-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .rules-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .rules-table th {
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    padding: 0 0 10px;
+    border-bottom: 1.5px solid #f0f0f0;
+  }
+
+  .rules-table td {
+    padding: 10px 0;
+    border-bottom: 1px solid #f5f5f5;
+    vertical-align: middle;
+  }
+
+  .rules-table tr:last-child td { border-bottom: none; }
+
+  .rule-id {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .severity-pill {
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .sev-high { background: #ffe0e0; color: var(--red); }
+  .sev-med  { background: #fff3cd; color: #b8860b; }
+  .sev-low  { background: #e0f5e0; color: #2d8a2d; }
+
+  .context-tag {
+    background: #f0f0f0;
+    color: var(--text-dark);
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+  }
+
+  /* ── FORECAST / ANALYSIS CARD ────────────────────── */
+  .forecast-card {
+    background: var(--card-white);
+    border-radius: var(--radius-xl);
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .forecast-timeline { position: relative; }
+
+  .forecast-timeline h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .timeline-icon {
+    width: 30px; height: 30px;
+    background: var(--mint);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .timeline-list { position: relative; padding-left: 0; }
+
+  .timeline-item {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .timeline-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: #d0d0d0;
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #d0d0d0;
+    margin-top: 3px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .timeline-item.active .timeline-dot {
+    background: var(--card-dark);
+    box-shadow: 0 0 0 2px var(--card-dark);
+  }
+
+  .timeline-item .label {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .timeline-item .sublabel {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 3px;
+  }
+
+  .timeline-line {
+    position: absolute;
+    left: 4px;
+    top: 14px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #d0d0d0, transparent);
+    z-index: 0;
+  }
+
+  /* right column sub-cards */
+  .sub-card {
+    border-radius: var(--radius-lg);
+    padding: 16px;
+  }
+
+  .sub-card-mint { background: var(--mint); }
+  .sub-card-purple { background: var(--purple); }
+
+  .sub-card label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.6;
+    font-family: 'DM Mono', monospace;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .sub-card .big-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 4px 0;
+  }
+
+  .mini-chart {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .progress-track {
+    height: 8px;
+    background: rgba(0,0,0,0.1);
+    border-radius: var(--radius-pill);
+    position: relative;
+    overflow: visible;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background: rgba(0,0,0,0.3);
+    position: relative;
+  }
+
+  .progress-dot {
+    position: absolute;
+    right: -4px; top: 50%;
+    transform: translateY(-50%);
+    width: 10px; height: 10px;
+    background: var(--purple-dark);
+    border: 2px solid #fff;
+    border-radius: 50%;
+  }
+
+  .pct-label {
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 6px;
+    opacity: 0.8;
+  }
+
+  /* ── TRANSACTIONS / HISTORY ───────────────────────── */
+  .history-card {
+    background: var(--card-light);
+    border-radius: var(--radius-xl);
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .history-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .history-icon {
+    width: 40px; height: 40px;
+    background: var(--card-dark);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .history-header h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .history-sub { font-size: 12px; color: var(--text-muted); }
+
+  .history-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .tab-btn {
+    padding: 7px 16px;
+    border-radius: var(--radius-pill);
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: 0.15s;
+  }
+
+  .tab-btn.active { background: var(--card-dark); color: #fff; }
+  .tab-btn:not(.active) { background: rgba(0,0,0,0.06); color: var(--text-muted); }
+
+  .event-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1.8fr 0.7fr 0.8fr 1.8fr;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.7);
+    border-radius: var(--radius-md);
+    margin-bottom: 6px;
+    font-size: 12px;
+    transition: background 0.15s;
+  }
+
+  .event-row:hover { background: #fff; }
+
+  .event-row .ts {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .event-row .eid {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: #999;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .event-row .score {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .decision-pill {
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    font-size: 10px;
+    font-weight: 700;
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+  }
+
+  .dec-block { background: #ffe0e0; color: var(--red); }
+  .dec-sanitize { background: #fff3cd; color: #b8860b; }
+  .dec-forward { background: #e0f5e0; color: #2d8a2d; }
+
+  .event-row .preview {
+    font-size: 11px;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .col-header {
+    display: grid;
+    grid-template-columns: 1.4fr 1.8fr 0.7fr 0.8fr 1.8fr;
+    gap: 12px;
+    padding: 0 14px 8px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── SEMANTIC ANALYSIS / STATS CARD ───────────────── */
+  .stats-card {
+    background: var(--card-dark);
+    border-radius: var(--radius-xl);
+    padding: 22px 24px;
+    color: #fff;
+  }
+
+  .stats-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .stat-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 18px; font-family: 'DM Mono', monospace; }
+
+  .stat-row {
+    margin-bottom: 14px;
+  }
+
+  .stat-row-header {
+    display: flex; justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .stat-name {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.5);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .stat-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .stat-bar-track {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: var(--radius-pill);
+  }
+
+  .stat-bar-fill {
+    height: 100%;
+    border-radius: var(--radius-pill);
+    transition: width 1s ease;
+  }
+
+  .fill-mint { background: var(--mint); }
+  .fill-purple { background: var(--purple); }
+  .fill-red { background: var(--red); }
+
+  .stat-extra {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .stat-chip {
+    background: rgba(255,255,255,0.06);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    flex: 1;
+    text-align: center;
+  }
+
+  .stat-chip .chip-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .stat-chip .chip-lbl {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    font-family: 'DM Mono', monospace;
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* status indicator */
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+  }
+
+  .status-dot.green { background: var(--mint); box-shadow: 0 0 0 0 rgba(126,221,138,0.5); }
+  .status-dot.yellow { background: var(--yellow); }
+  .status-dot.red { background: var(--red); }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(126,221,138,0.5); }
+    70%  { box-shadow: 0 0 0 6px rgba(126,221,138,0); }
+    100% { box-shadow: 0 0 0 0 rgba(126,221,138,0); }
+  }
+
+  .highlight-tag {
+    background: rgba(126,221,138,0.15);
+    color: var(--mint);
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .inject-highlight {
+    background: rgba(255,107,107,0.2);
+    color: #ff9090;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+
+  .no-highlight {
+    color: rgba(255,255,255,0.7);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+  }
+
+  /* ── LLM PROVIDER REPORT ─────────────────────────── */
+  .provider-card {
+    background: var(--card-light);
+    border-radius: var(--radius-xl);
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+  }
+
+  .provider-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .provider-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .provider-info-item label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .provider-info-item .val {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .response-boxes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .resp-box {
+    background: rgba(0,0,0,0.04);
+    border-radius: var(--radius-md);
+    padding: 12px;
+  }
+
+  .resp-box label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .resp-box p {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--text-dark);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .resp-box.groq-box p {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .final-resp {
+    background: rgba(0,0,0,0.04);
+    border-radius: var(--radius-md);
+    padding: 12px;
+  }
+
+  .final-resp label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .final-resp p {
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--text-dark);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .prompt-trace {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .trace-box {
+    background: rgba(0,0,0,0.04);
+    border-radius: var(--radius-md);
+    padding: 12px;
+  }
+
+  .trace-box label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .trace-box p {
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-icon">🛡</div>
+    <div class="logo-text">
+      <h1>LLM Guardian</h1>
+      <p>Prompt Injection Detection & Mitigation System</p>
+    </div>
+  </div>
+  <div class="header-badges">
+    <span class="badge">LLM backend: Gemini + Groq fallback</span>
+    <span class="badge active" id="activeProviderBadge">Active Provider: NONE</span>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="dashboard">
+
+  <!-- LEFT COLUMN -->
+  <div class="col-left">
+
+    <!-- PROMPT INPUT (Sales Statistics equivalent) -->
+    <div class="prompt-card card-dark">
+      <div class="prompt-card-header">
+        <h2>Prompt Input</h2>
+        <button class="dropdown-pill">Real-time ▾</button>
+      </div>
+      <textarea id="promptInput" class="prompt-textarea" placeholder="Enter prompt to analyze…"></textarea>
+      <div class="prompt-actions">
+        <button id="analyzeBtn" class="btn-primary">▶ Analyze Prompt</button>
+        <button id="clearBtn" class="btn-ghost">Clear</button>
+      </div>
+      <div class="powered-by">Powered by LLM Guardian v1.0 | Gemini Flash backend</div>
+    </div>
+
+    <!-- RISK SCORE GAUGE (Current Balance equivalent) -->
+    <div class="balance-card">
+      <h2>Risk Score</h2>
+      <div class="balance-nav">
+        <button class="nav-btn">←</button>
+        <button class="nav-btn">→</button>
+      </div>
+      <div class="gauge-wrap">
+        <svg class="gauge-svg" viewBox="0 0 200 110">
+          <!-- Track -->
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(0,0,0,0.1)" stroke-width="14" stroke-linecap="round"/>
+          <!-- Fill: 50% = medium -->
+          <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="14" stroke-linecap="round" stroke-dasharray="251" stroke-dashoffset="126"/>
+          <!-- Hatched accent -->
+          <path d="M 120 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(0,0,0,0.08)" stroke-width="14" stroke-linecap="round" stroke-dasharray="4 4"/>
+          <!-- Needle dot -->
+          <circle cx="100" cy="22" r="5" fill="#8b75e0" stroke="#fff" stroke-width="2"/>
+        </svg>
+        <div class="gauge-label">
+          <div id="gaugeScore" class="gauge-score">0</div>
+          <div id="gaugeSub" class="gauge-sub">
+            <span id="gaugeTrend" class="trend-up">•</span>
+            <span id="gaugeText">LOW · Risk Level</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATCHED RULES (inline table) -->
+    <div class="rules-card">
+      <h3><span class="timeline-icon">⚠</span> Matched Rules</h3>
+      <table class="rules-table">
+        <thead>
+          <tr>
+            <th>Rule ID</th>
+            <th>Rule Name</th>
+            <th>Severity</th>
+            <th>Matched Context</th>
+          </tr>
+        </thead>
+        <tbody id="matchedRulesBody">
+          <tr>
+            <td colspan="4" style="font-size:12px;color:var(--text-muted);padding-top:12px;">No analysis yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- LLM PROVIDER REPORT -->
+    <div class="provider-card">
+      <h3>LLM Provider Report</h3>
+      <div class="provider-grid">
+        <div class="provider-info-item">
+          <label>Active Provider</label>
+          <div id="activeProviderText" class="val">NONE</div>
+        </div>
+        <div class="provider-info-item">
+          <label>Active Model</label>
+          <div id="activeModelText" class="val" style="font-size:14px;">-</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:10px;">
+        <div class="trace-box" style="margin-bottom:8px;">
+          <label>Prompt Trace</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div>
+              <div style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;margin-bottom:4px;">ORIGINAL PROMPT</div>
+              <p id="originalPromptText" style="font-family:'DM Mono',monospace;font-size:11px;">-</p>
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--text-muted);font-family:'DM Mono',monospace;margin-bottom:4px;">FORWARDED PROMPT</div>
+              <p id="forwardedPromptText" class="no-highlight">-</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="response-boxes">
+        <div class="resp-box">
+          <label>Gemini Response</label>
+          <p id="geminiResponseText">[Gemini Not Used Yet]</p>
+        </div>
+        <div class="resp-box groq-box">
+          <label>Groq Response</label>
+          <p id="groqResponseText">[Groq Not Used Yet]</p>
+        </div>
+      </div>
+      <div class="final-resp">
+        <label>Final Active Response</label>
+        <p id="llmResponseText">Run an analysis to see active response.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+  <div class="col-right">
+
+    <!-- RESULT STATUS (Recent Transactions equivalent) -->
+    <div class="result-card">
+      <div class="result-header">
+        <div class="result-header-left">
+          <div id="resultIcon" class="result-icon" style="background:var(--mint-dark);font-size:20px;">⬤</div>
+          <div>
+            <div id="resultStatusTitle" class="result-status-title">AWAITING ANALYSIS</div>
+            <div id="resultStatusSub" class="result-status-sub">Submit a prompt to begin</div>
+          </div>
+        </div>
+        <span id="resultStatusDot" class="status-dot green"></span>
+      </div>
+      <div class="result-meta">
+        <div class="meta-item">
+          <label>Event ID</label>
+          <div id="metricEventId" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.4;">-</div>
+        </div>
+        <div class="meta-item">
+          <label>Risk Level</label>
+          <span id="metricRiskLevel" class="meta-badge" style="background:#e0f5e0;color:#2d8a2d;">LOW</span>
+        </div>
+        <div class="meta-item">
+          <label>Risk Score</label>
+          <div id="metricRiskScore" class="meta-val">0</div>
+          <div class="risk-bar"><div id="riskBarDot" class="risk-bar-dot" style="left:0%"></div></div>
+        </div>
+        <div class="meta-item">
+          <label>Processing</label>
+          <div id="metricProcessing" class="meta-val" style="font-size:18px;">0.00<span style="font-size:12px;font-weight:400;">ms</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MARKET FORECAST → SEMANTIC ANALYSIS + SUB-CARDS -->
+    <div class="forecast-card">
+      <div class="forecast-timeline">
+        <h3><span class="timeline-icon">🔍</span> Semantic Analysis</h3>
+        <div style="position:relative;">
+          <div class="timeline-line"></div>
+          <div class="timeline-list">
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div>
+                <div class="label">TF-IDF Similarity</div>
+                <div class="sublabel">Pattern-based matching</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div>
+                <div class="label">Embedding Distance</div>
+                <div class="sublabel">Vector space analysis</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot"></div>
+              <div>
+                <div class="label">Attack Templates</div>
+                <div class="sublabel">Canonical comparison</div>
+              </div>
+            </div>
+            <div class="timeline-item active">
+              <div class="timeline-dot"></div>
+              <div>
+                <div class="label">Hierarchy Violation</div>
+                <div class="sublabel">Instruction override check</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <!-- TF-IDF score (BTC Price equivalent) -->
+        <div class="sub-card sub-card-mint">
+          <label>TF-IDF Semantic Similarity <span>↗</span></label>
+          <div id="tfidfScore" class="big-val">0.0000</div>
+          <div id="tfidfPct" class="pct-label">+0.00% match threshold</div>
+          <div class="mini-chart">
+            <div class="progress-track" style="background:rgba(0,0,0,0.12);">
+              <div id="tfidfFill" class="progress-fill" style="width:0%;background:rgba(0,0,0,0.25);">
+                <div class="progress-dot" style="background:var(--purple-dark);"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Embedding score (Market Cap equivalent) -->
+        <div class="sub-card sub-card-purple">
+          <label>Embedding Similarity <span>↗</span></label>
+          <div id="embeddingScore" class="big-val">0.0000</div>
+          <div style="margin-top:6px;">
+            <svg width="100%" height="50" viewBox="0 0 160 50">
+              <polyline points="0,45 20,42 40,38 60,35 80,30 100,25 120,20 140,28 160,15" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="140" cy="28" r="5" fill="var(--mint)" stroke="#fff" stroke-width="2"/>
+              <rect x="0" y="30" width="160" height="20" fill="rgba(0,0,0,0.08)" rx="3"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY TABLE (Transactions equivalent) -->
+    <div class="history-card">
+      <div class="history-header">
+        <div class="history-icon">🔄</div>
+        <div>
+          <h3>Analysis History</h3>
+          <div class="history-sub">Recent prompt events</div>
+        </div>
+      </div>
+      <div class="history-tabs">
+        <button class="tab-btn active">Analysis History</button>
+        <button class="tab-btn">Statistics</button>
+      </div>
+
+      <div class="col-header">
+        <span>Timestamp</span>
+        <span>Event ID</span>
+        <span>Score</span>
+        <span>Decision</span>
+        <span>Prompt Preview</span>
+      </div>
+
+      <div id="historyRows">
+        <div class="event-row">
+          <span class="ts">-</span>
+          <span class="eid">-</span>
+          <span class="score" style="color:var(--mint-dark)">0</span>
+          <span class="decision-pill dec-forward">FORWARD</span>
+          <span class="preview">No history yet.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEMANTIC STATS (dark card) -->
+    <div class="stats-card">
+      <h3><span class="highlight-tag">LIVE</span> Detection Statistics</h3>
+      <div class="stat-sub">TF-IDF · Embedding · Transformer scores</div>
+
+      <div class="stat-row">
+        <div class="stat-row-header">
+          <span class="stat-name">Block Rate</span>
+          <span id="statBlockedPct" class="stat-value" style="color:var(--red)">0%</span>
+        </div>
+        <div class="stat-bar-track"><div id="statBlockedBar" class="stat-bar-fill fill-red" style="width:0%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-row-header">
+          <span class="stat-name">Sanitize Rate</span>
+          <span id="statSanitizedPct" class="stat-value" style="color:var(--yellow)">0%</span>
+        </div>
+        <div class="stat-bar-track"><div id="statSanitizedBar" class="stat-bar-fill fill-purple" style="width:0%"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-row-header">
+          <span class="stat-name">Forward Rate</span>
+          <span id="statForwardedPct" class="stat-value" style="color:var(--mint)">0%</span>
+        </div>
+        <div class="stat-bar-track"><div id="statForwardedBar" class="stat-bar-fill fill-mint" style="width:0%"></div></div>
+      </div>
+
+      <div class="stat-extra">
+        <div class="stat-chip">
+          <div id="statTotal" class="chip-val" style="color:var(--mint)">0</div>
+          <div class="chip-lbl">Total Events</div>
+        </div>
+        <div class="stat-chip">
+          <div id="statBlocked" class="chip-val" style="color:var(--red)">0</div>
+          <div class="chip-lbl">Blocked</div>
+        </div>
+        <div class="stat-chip">
+          <div id="statSanitized" class="chip-val" style="color:var(--yellow)">0</div>
+          <div class="chip-lbl">Sanitized</div>
+        </div>
+        <div class="stat-chip">
+          <div id="statAvgRisk" class="chip-val" style="color:var(--mint)">0.00</div>
+          <div class="chip-lbl">Avg Risk</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const promptInput = document.getElementById("promptInput");
+  const analyzeBtn = document.getElementById("analyzeBtn");
+  const clearBtn = document.getElementById("clearBtn");
+  const activeProviderBadge = document.getElementById("activeProviderBadge");
+
+  const resultStatusTitle = document.getElementById("resultStatusTitle");
+  const resultStatusSub = document.getElementById("resultStatusSub");
+  const resultIcon = document.getElementById("resultIcon");
+  const resultStatusDot = document.getElementById("resultStatusDot");
+  const metricEventId = document.getElementById("metricEventId");
+  const metricRiskLevel = document.getElementById("metricRiskLevel");
+  const metricRiskScore = document.getElementById("metricRiskScore");
+  const metricProcessing = document.getElementById("metricProcessing");
+  const riskBarDot = document.getElementById("riskBarDot");
+
+  const gaugeScore = document.getElementById("gaugeScore");
+  const gaugeTrend = document.getElementById("gaugeTrend");
+  const gaugeText = document.getElementById("gaugeText");
+
+  const matchedRulesBody = document.getElementById("matchedRulesBody");
+  const activeProviderText = document.getElementById("activeProviderText");
+  const activeModelText = document.getElementById("activeModelText");
+  const originalPromptText = document.getElementById("originalPromptText");
+  const forwardedPromptText = document.getElementById("forwardedPromptText");
+  const geminiResponseText = document.getElementById("geminiResponseText");
+  const groqResponseText = document.getElementById("groqResponseText");
+  const llmResponseText = document.getElementById("llmResponseText");
+
+  const tfidfScore = document.getElementById("tfidfScore");
+  const tfidfPct = document.getElementById("tfidfPct");
+  const tfidfFill = document.getElementById("tfidfFill");
+  const embeddingScore = document.getElementById("embeddingScore");
+
+  const historyRows = document.getElementById("historyRows");
+  const statTotal = document.getElementById("statTotal");
+  const statBlocked = document.getElementById("statBlocked");
+  const statSanitized = document.getElementById("statSanitized");
+  const statAvgRisk = document.getElementById("statAvgRisk");
+  const statBlockedPct = document.getElementById("statBlockedPct");
+  const statSanitizedPct = document.getElementById("statSanitizedPct");
+  const statForwardedPct = document.getElementById("statForwardedPct");
+  const statBlockedBar = document.getElementById("statBlockedBar");
+  const statSanitizedBar = document.getElementById("statSanitizedBar");
+  const statForwardedBar = document.getElementById("statForwardedBar");
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function showError(message) {
+    console.error(message);
+    resultStatusSub.textContent = message;
+  }
+
+  function renderDecision(decision, riskLevel) {
+    if (decision === "BLOCK") {
+      resultStatusTitle.textContent = "BLOCKED";
+      resultIcon.style.background = "var(--red)";
+      resultStatusDot.className = "status-dot red";
+    } else if (decision === "SANITIZE") {
+      resultStatusTitle.textContent = "SANITIZED";
+      resultIcon.style.background = "var(--yellow)";
+      resultStatusDot.className = "status-dot yellow";
+    } else {
+      resultStatusTitle.textContent = "FORWARDED";
+      resultIcon.style.background = "var(--mint-dark)";
+      resultStatusDot.className = "status-dot green";
+    }
+
+    if (riskLevel === "HIGH") {
+      metricRiskLevel.style.background = "#ffe0e0";
+      metricRiskLevel.style.color = "var(--red)";
+      gaugeTrend.textContent = "↑";
+    } else if (riskLevel === "MEDIUM") {
+      metricRiskLevel.style.background = "#fff3cd";
+      metricRiskLevel.style.color = "#b8860b";
+      gaugeTrend.textContent = "→";
+    } else {
+      metricRiskLevel.style.background = "#e0f5e0";
+      metricRiskLevel.style.color = "#2d8a2d";
+      gaugeTrend.textContent = "↓";
+    }
+  }
+
+  function renderRules(rules) {
+    if (!Array.isArray(rules) || !rules.length) {
+      matchedRulesBody.innerHTML = '<tr><td colspan="4" style="font-size:12px;color:var(--text-muted);padding-top:12px;">No injection patterns detected.</td></tr>';
+      return;
+    }
+
+    matchedRulesBody.innerHTML = rules.map((rule) => {
+      const sevClass = rule.severity === "HIGH" ? "sev-high" : (rule.severity === "MEDIUM" ? "sev-med" : "sev-low");
+      return `
+        <tr>
+          <td><span class="rule-id">${escapeHtml(rule.rule_id || "-")}</span></td>
+          <td style="font-size:12px;">${escapeHtml(rule.rule_name || "-")}</td>
+          <td><span class="severity-pill ${sevClass}">${escapeHtml(rule.severity || "LOW")}</span></td>
+          <td><span class="context-tag">${escapeHtml(rule.match_context || "-")}</span></td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function renderReport(data) {
+    const decision = data.decision || "FORWARD";
+    const riskLevel = data.risk_level || "LOW";
+    const riskScore = Number(data.risk_score || 0);
+    const processing = Number(data.processing_time_ms || 0);
+
+    renderDecision(decision, riskLevel);
+    resultStatusSub.textContent = `Event processed · ${processing.toFixed(2)}ms`;
+
+    metricEventId.textContent = data.event_id || "-";
+    metricRiskLevel.textContent = riskLevel;
+    metricRiskScore.textContent = String(riskScore);
+    metricProcessing.innerHTML = `${processing.toFixed(2)}<span style="font-size:12px;font-weight:400;">ms</span>`;
+    riskBarDot.style.left = `${Math.max(0, Math.min(100, riskScore))}%`;
+
+    gaugeScore.textContent = String(riskScore);
+    gaugeText.textContent = `${riskLevel} · Risk Level`;
+
+    renderRules(data.matched_rules || []);
+
+    const provider = data.llm_provider || "NONE";
+    activeProviderBadge.textContent = `Active Provider: ${provider}`;
+    activeProviderText.textContent = provider;
+    activeModelText.textContent = data.llm_active_model || "-";
+
+    originalPromptText.innerHTML = escapeHtml(data.original_prompt || "-");
+    forwardedPromptText.textContent = data.forwarded_prompt || "BLOCKED - Not forwarded";
+
+    if (decision === "BLOCK") {
+      geminiResponseText.textContent = "[Blocked: Gemini not contacted]";
+      groqResponseText.textContent = "[Blocked: Groq not contacted]";
+      llmResponseText.textContent = "Prompt was blocked. LLM providers were not contacted.";
+    } else {
+      geminiResponseText.textContent = data.gemini_response || "[Gemini Not Used]";
+      groqResponseText.textContent = data.groq_response || "[Groq Not Used]";
+      llmResponseText.textContent = data.llm_response || "[No response]";
+    }
+
+    const tfidf = Number(data.semantic_similarity_score || 0);
+    const embedding = Number(data.embedding_similarity_score || 0);
+    tfidfScore.textContent = tfidf.toFixed(4);
+    embeddingScore.textContent = embedding.toFixed(4);
+    tfidfPct.textContent = `+${(tfidf * 100).toFixed(2)}% match threshold`;
+    tfidfFill.style.width = `${Math.max(0, Math.min(100, tfidf * 100))}%`;
+  }
+
+  function historyDecisionClass(decision) {
+    if (decision === "BLOCK") return "dec-block";
+    if (decision === "SANITIZE") return "dec-sanitize";
+    return "dec-forward";
+  }
+
+  function scoreColor(score) {
+    if (score >= 70) return "var(--red)";
+    if (score >= 35) return "var(--orange)";
+    return "var(--mint-dark)";
+  }
+
+  async function loadHistory() {
+    try {
+      const res = await fetch("/history");
+      if (!res.ok) throw new Error("Failed to load history");
+      const rows = await res.json();
+
+      if (!Array.isArray(rows) || !rows.length) {
+        historyRows.innerHTML = `
+          <div class="event-row">
+            <span class="ts">-</span>
+            <span class="eid">-</span>
+            <span class="score" style="color:var(--mint-dark)">0</span>
+            <span class="decision-pill dec-forward">FORWARD</span>
+            <span class="preview">No history yet.</span>
+          </div>`;
+        return;
+      }
+
+      historyRows.innerHTML = rows.map((row) => `
+        <div class="event-row">
+          <span class="ts">${escapeHtml(row.timestamp || "-")}</span>
+          <span class="eid">${escapeHtml(row.event_id || "-")}</span>
+          <span class="score" style="color:${scoreColor(Number(row.risk_score || 0))}">${Number(row.risk_score || 0)}</span>
+          <span class="decision-pill ${historyDecisionClass(row.decision)}">${escapeHtml(row.decision || "FORWARD")}</span>
+          <span class="preview">${escapeHtml(row.prompt_preview || "-")}</span>
+        </div>
+      `).join("");
+    } catch (err) {
+      showError(err.message || "Could not load history.");
+    }
+  }
+
+  async function loadStats() {
+    try {
+      const res = await fetch("/stats");
+      if (!res.ok) throw new Error("Failed to load stats");
+      const s = await res.json();
+
+      const total = Number(s.total_analyzed || 0);
+      const blocked = Number(s.total_blocked || 0);
+      const sanitized = Number(s.total_sanitized || 0);
+      const forwarded = Number(s.total_forwarded || 0);
+      const avgRisk = Number(s.average_risk_score || 0);
+
+      statTotal.textContent = String(total);
+      statBlocked.textContent = String(blocked);
+      statSanitized.textContent = String(sanitized);
+      statAvgRisk.textContent = avgRisk.toFixed(2);
+
+      const blockPct = total ? (blocked / total) * 100 : 0;
+      const sanitizePct = total ? (sanitized / total) * 100 : 0;
+      const forwardPct = total ? (forwarded / total) * 100 : 0;
+
+      statBlockedPct.textContent = `${blockPct.toFixed(0)}%`;
+      statSanitizedPct.textContent = `${sanitizePct.toFixed(0)}%`;
+      statForwardedPct.textContent = `${forwardPct.toFixed(0)}%`;
+      statBlockedBar.style.width = `${blockPct}%`;
+      statSanitizedBar.style.width = `${sanitizePct}%`;
+      statForwardedBar.style.width = `${forwardPct}%`;
+    } catch (err) {
+      showError(err.message || "Could not load stats.");
+    }
+  }
+
+  async function analyzePrompt() {
+    const prompt = promptInput.value.trim();
+    if (!prompt) {
+      showError("Please enter a prompt to analyze.");
+      return;
+    }
+
+    analyzeBtn.disabled = true;
+    const originalLabel = analyzeBtn.textContent;
+    analyzeBtn.textContent = "Analyzing...";
+
+    try {
+      const res = await fetch("/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      if (!res.ok) {
+        const txt = await res.text();
+        throw new Error(`Analyze failed (${res.status}): ${txt}`);
+      }
+      const data = await res.json();
+      renderReport(data);
+      await loadHistory();
+      await loadStats();
+    } catch (err) {
+      showError(err.message || "Analyze request failed.");
+    } finally {
+      analyzeBtn.disabled = false;
+      analyzeBtn.textContent = originalLabel;
+    }
+  }
+
+  analyzeBtn.addEventListener("click", analyzePrompt);
+  clearBtn.addEventListener("click", () => {
+    promptInput.value = "";
+    promptInput.focus();
+  });
+
+  loadHistory();
+  loadStats();
+  setInterval(loadStats, 30000);
+</script>
+
+</body>
+</html>

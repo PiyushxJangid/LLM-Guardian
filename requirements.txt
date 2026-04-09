@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+google-generativeai
+scikit-learn
+pydantic
+python-multipart
+transformers
+torch
+sentence-transformers
+numpy
+scipy
